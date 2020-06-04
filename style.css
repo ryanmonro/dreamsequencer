@@ -1,5 +1,12 @@
 body {
   background: black;
+  font-family: 'Fira Mono', monospace;
+  color: lime;
+}
+
+h1 {
+  font-weight: 400;
+  font-size: 12px;
 }
 
 #touch {
