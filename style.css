@@ -1,0 +1,14 @@
+body {
+  background: black;
+}
+
+#touch {
+  display: block;
+  background: #222222;
+  position: relative;
+  top: 100px;
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
