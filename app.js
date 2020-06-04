@@ -39,6 +39,12 @@ var Dream = {
     this.notes.push(new Note(x / WIDTH, 1 - y / HEIGHT));
   },
   init: function(){
+    this.touch.addEventListener('click', function(e){
+      var rect = e.target.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      Dream.addNote(x, y);
+    })
     this.ctx = this.touch.getContext("2d");
   },
   play: function(time){
@@ -71,14 +77,6 @@ var Dream = {
     }
   }
 }
-
-Dream.touch.addEventListener('click', function(e){
-  var rect = e.target.getBoundingClientRect();
-  var x = e.clientX - rect.left;
-  var y = e.clientY - rect.top;
-  console.log(x, y);
-  Dream.addNote(x, y);
-})
 
 Dream.init();
 
