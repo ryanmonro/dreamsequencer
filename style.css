@@ -1,12 +1,51 @@
 body {
-  background: black;
+  background: #222222;
   font-family: 'Fira Mono', monospace;
   color: lime;
 }
 
 h1 {
+  position: relative;
+  top: 50px;
   font-weight: 400;
   font-size: 12px;
+  text-align: center;
+}
+
+.dream {
+  position: relative;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.xlabels {
+  position: relative;
+  top: 90px;
+  width: 100%;
+  max-width: 400px;
+  height: 10px;
+  margin: 0 auto;
+}
+
+.ylabels {
+  position: absolute;
+  top: 136px;
+  width: 100px;
+  height: 400px;
+}
+
+.label {
+  position: absolute;
+  font-weight: 400;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.label.y {
+  position: absolute;
+  text-align: right;
+  right: 10px;
+
 }
 
 #touch {

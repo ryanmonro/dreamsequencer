@@ -46,6 +46,25 @@ var Dream = {
       Dream.addNote(x, y);
     })
     this.ctx = this.touch.getContext("2d");
+    this.drawLabels();
+  },
+  drawLabels: function(){
+    var xlabels = document.querySelector('.xlabels');
+    var ylabels = document.querySelector('.ylabels');
+    for(label of Object.keys(this.labels.x)){
+      var div = document.createElement("div");
+      div.className = "label";
+      div.style.left = this.labels.x[label] + "px";
+      div.textContent = label;
+      xlabels.append(div);
+    }
+    for(label of Object.keys(this.labels.y)){
+      var div = document.createElement("div");
+      div.className = "label y";
+      div.style.bottom = this.labels.y[label] + "px";
+      div.textContent = label;
+      ylabels.append(div);
+    }
   },
   play: function(time){
     for(note of this.notes){
@@ -56,6 +75,11 @@ var Dream = {
     this.ctx.clearRect(0, 0, this.touch.width, this.touch.height);
     this.ctx.strokeStyle = "#00FF00";
     this.ctx.lineWidth = 1;
+    // line at bottom
+    this.ctx.moveTo(0, HEIGHT - 1);
+    this.ctx.lineTo(WIDTH, HEIGHT - 1);
+    this.ctx.stroke();
+    // graph lines
     for(index in this.labels.x){
       var x = this.labels.x[index];
       this.ctx.moveTo(x, 0);
@@ -68,52 +92,52 @@ var Dream = {
       this.ctx.lineTo(WIDTH, y);
       this.ctx.stroke();
     }
+    // draw notes
     for(note of this.notes){
-      var x = Math.floor(note.xFloat * this.touch.width);
-      var y = Math.floor((1 - note.yFloat) * this.touch.height);
-      this.ctx.strokeStyle = "rgba(0,255,0," + note.fade(time) + ")";
-      console.log(x,y)
-      this.ctx.strokeRect(x - 2, y - 2, 5, 5);
+      note.play(time);
+      note.draw(time, this.touch);
     }
   }
 }
-
-Dream.init();
 
 class Note {
   constructor(x, y){
     this.xFloat = x;
     this.yFloat = y;
     this.pitch = LOWESTNOTE * Math.pow(2, y * OCTAVES);
-    this.interval = Math.floor(Math.pow(60, x * 6 * 0.75));
+    this.interval = Math.pow(60, x * 6 * 0.75) * 1000;
     this.nextPlayTime = 0;
     this.player = new Tone.Synth().toMaster();
     this.player.set("envelope", {decay: 0.2, sustain: 0.3, release: 1});
+    this.player.set("volume", -12);
   }
   play(time){
     if (this.nextPlayTime == 0) {
       this.nextPlayTime = time;
     }
     if (time >= this.nextPlayTime) {
-      this.player.triggerAttackRelease(this.pitch, "16n", time);
+      this.player.triggerAttackRelease(this.pitch, "16n");
       this.nextPlayTime += this.interval;
     }
   }
-  fade(time){
+  draw(time, touch){
+    var ctx = touch.getContext("2d");
+    var x = Math.floor(this.xFloat * touch.width);
+    var y = Math.floor((1 - this.yFloat) * touch.height);
     var f = (this.nextPlayTime - time) / this.interval;
-    console.log(f)
-    return f;
+    f = f * f * f; // easing
+    ctx.strokeStyle = "rgba(0,255,0," + f + ")";
+    ctx.strokeRect(x - 2, y - 2, 5, 5);
   }
 }
 
-var loop = new Tone.Sequence(function(time, step){
-  if (step == 0) {
-    Dream.play(time);
-  }
-  Tone.Draw.schedule(function(){
-    Dream.draw(time);
-  }, time);
-}, [0, 1, 2, 3, 4, 5, 6, 7], 0.25).start(0);
+Dream.init();
+
+function draw(time){
+  Dream.draw(time);
+  window.requestAnimationFrame(draw);
+}
+
+window.requestAnimationFrame(draw);
 
 Tone.Transport.start();
-
